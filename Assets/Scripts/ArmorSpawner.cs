@@ -2,12 +2,13 @@ using UnityEngine;
 
 public class ArmorSpawner : MonoBehaviour
 {
-
     [SerializeField] private Armor[] armorPrefabs;
-
     [SerializeField] private float spawnRange = 50f;
-
     [SerializeField] private int amountToSpawn = 10;
+    [SerializeField] private float wallCheckRadius = 2f;
+    [SerializeField] private LayerMask wallLayer;
+    [SerializeField] private float armorCheckRadius = 2f;
+    [SerializeField] private LayerMask armorLayer;
 
     private void Start()
     {
@@ -24,27 +25,31 @@ public class ArmorSpawner : MonoBehaviour
 
     private void SpawnRandomArmor()
     {
-        Vector3 randomPosition =GetRandomGroundPosition();
+        Vector3 randomPosition = GetValidSpawnPosition();
 
-        int randomArmor = Random.Range( 0,armorPrefabs.Length);
+        int randomArmor = Random.Range( 0, armorPrefabs.Length);
 
-        Instantiate(armorPrefabs[randomArmor],randomPosition,Quaternion.identity);
+        Instantiate(armorPrefabs[randomArmor], randomPosition, Quaternion.identity );
     }
 
-    private Vector3 GetRandomGroundPosition()
+    private Vector3 GetValidSpawnPosition()
     {
-        Vector3 randomPoint = new Vector3(Random.Range(-spawnRange, spawnRange),50f,Random.Range(-spawnRange, spawnRange));
+        Vector3 randomPoint = new Vector3( Random.Range(-spawnRange, spawnRange), 50f, Random.Range(-spawnRange, spawnRange));
 
         RaycastHit hit;
 
-        if (Physics.Raycast(randomPoint, Vector3.down,out hit,100f))
+        if (Physics.Raycast(randomPoint, Vector3.down, out hit, 100f))
         {
-            if (hit.collider.CompareTag("Ground"))
+            bool isGround = hit.collider.CompareTag("Ground");
+            bool nearWall = Physics.CheckSphere(hit.point, wallCheckRadius, wallLayer);
+            bool nearArmor = Physics.CheckSphere(hit.point, armorCheckRadius, armorLayer);
+
+            if (isGround &&!nearWall &&!nearArmor)
             {
                 return hit.point;
             }
         }
 
-        return GetRandomGroundPosition();
+        return GetValidSpawnPosition();
     }
 }

@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 611354422886598945}
   - component: {fileID: 3762801701547136914}
   - component: {fileID: 5432252339393100020}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: LegendaryArmor
   m_TagString: Untagged
   m_Icon: {fileID: 0}
